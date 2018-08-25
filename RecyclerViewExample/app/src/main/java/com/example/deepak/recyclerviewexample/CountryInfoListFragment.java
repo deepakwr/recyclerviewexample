@@ -170,9 +170,7 @@ public class CountryInfoListFragment extends Fragment {
         @Override
         public void onBindViewHolder(CountryInfoHolder holder, final int position) {
 
-            CountryInfoHolder viewHolder = (CountryInfoHolder)holder;
             final CountryInfo item = countryInfoArrayList.get(position);
-
 
             holder.name.setText(countryInfoArrayList.get(position).getName());
             holder.currency.setText(countryInfoArrayList.get(position).getCurrency());

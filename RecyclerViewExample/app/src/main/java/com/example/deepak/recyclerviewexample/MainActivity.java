@@ -12,14 +12,11 @@ import android.view.View;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     static public String tag = "RecyclerViewExample";
-    static AppCompatActivity activity = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = this;
         setContentView(R.layout.activity_main);
-
         loadFragment();
     }
 
