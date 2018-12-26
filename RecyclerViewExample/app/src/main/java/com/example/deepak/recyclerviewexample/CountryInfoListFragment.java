@@ -42,13 +42,21 @@ public class CountryInfoListFragment extends Fragment {
     ArrayList<CountryInfo> countryInfoArrayList = new ArrayList<>();
     RecyclerView recyclerView = null;
 
+    int currentPosition = -1;
+
+
+    // URL available for getting country basic information.
+    private static String REST_COUNTRY_INFO_URL = "https://restcountries.eu/rest/v2/all";
 
     public CountryInfoListFragment(){
+        // Loading the url in the creation of this fragment.
         loadData();
     }
 
+
     private void loadData() {
-        new RetrieveJsonTask().execute("https://restcountries.eu/rest/v2/all");
+        // Running an asynctask for the response which will contain json information related for storage.
+        new RetrieveJsonTask().execute(REST_COUNTRY_INFO_URL);
     }
 
 
@@ -80,7 +88,7 @@ public class CountryInfoListFragment extends Fragment {
         return jsonData;
     }
 
-    // convert inputstream to String
+    // Converting inputstream to String
     private static String convertInputStreamToString(InputStream inputStream) throws IOException {
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
         String line = "";
@@ -93,6 +101,7 @@ public class CountryInfoListFragment extends Fragment {
 
     }
 
+  
     public void loadCountryInfo(String jsonString){
         if(jsonString==null || jsonString.length()<=0)
         {
@@ -198,6 +207,8 @@ public class CountryInfoListFragment extends Fragment {
             return countryInfoArrayList.size();
         }
 
+
+        // Adds element for removal. This is called on slow swipe. The view will be updated with a delete icon
         public void pendingRemoval(int position) {
             clearPreviousPendingRemoval();
 
@@ -209,6 +220,7 @@ public class CountryInfoListFragment extends Fragment {
 
         }
 
+        // This clears the elements that are already added for removal
         void clearPreviousPendingRemoval(){
             for (int counter = 0; counter < itemsPendingRemoval.size(); counter++) {
                 CountryInfo countryInfo =itemsPendingRemoval.get(counter);
@@ -219,6 +231,7 @@ public class CountryInfoListFragment extends Fragment {
                     notifyItemChanged(position);
                 }
             }
+            currentPosition = -1;
         }
 
         public void remove(int position) {
@@ -236,9 +249,12 @@ public class CountryInfoListFragment extends Fragment {
         }
     }
 
+
+    // AsyncTask loading the url response in background.
     class RetrieveJsonTask extends AsyncTask<String, Void, String> {
 
         protected String doInBackground(String... urls) {
+            // urls[0] is used, since are using single url.
             String jsonString  = GET(urls[0]);
             return jsonString;
         }
@@ -282,14 +298,15 @@ public class CountryInfoListFragment extends Fragment {
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 int position = viewHolder.getAdapterPosition();
-                MainAdapter testAdapter = (MainAdapter)recyclerView.getAdapter();
-                if (testAdapter.isPendingRemoval(position)) {
+                MainAdapter adapter = (MainAdapter)recyclerView.getAdapter();
+                if (adapter.isPendingRemoval(position)) {
 
                     return 0;
                 }
                 return super.getSwipeDirs(recyclerView, viewHolder);
             }
 
+            // This will be called on fast swipe and will remove element if the direction of swipe is towards left.
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 int swipedPosition = viewHolder.getAdapterPosition();
@@ -311,20 +328,23 @@ public class CountryInfoListFragment extends Fragment {
                     init();
                 }
 
-                if(isCurrentlyActive) {
+                if(isCurrentlyActive && currentPosition==-1) {
 
-                    if(dX<=-500) {
+                    //Todo:Currently 500 hardcoded for the distance swiped towards left. Needs correction
+                    if(dX<=-500 && Math.abs(dY)<100) {
                         Log.d(MainActivity.tag, "onChildDraw dX: " + dX);
 
                         int position = viewHolder.getAdapterPosition();
+
                         MainAdapter adapter = (MainAdapter) recyclerView.getAdapter();
                         if (!adapter.isPendingRemoval(position)) {
-
+                            currentPosition = position;
                             adapter.pendingRemoval(position);
                         }
                     }
                 }
 
+                // Setting background of the recycler view item as purple while swiping left.
                 background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
                 background.draw(c);
 

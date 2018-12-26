@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(isConnected()) {
 
+            // Displaying CountryInfoListFragment.
             findViewById(R.id.errorContainer).setVisibility(View.GONE);
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -35,11 +36,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         else
         {
+            // Displaying error page.
             findViewById(R.id.errorContainer).setVisibility(View.VISIBLE);
         }
     }
 
-    // check network connection
+    // Check network connection
     public boolean isConnected(){
         ConnectivityManager connMgr = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
