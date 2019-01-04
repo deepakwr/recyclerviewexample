@@ -312,8 +312,10 @@ public class CountryInfoListFragment extends Fragment {
                 int swipedPosition = viewHolder.getAdapterPosition();
                 MainAdapter adapter = (MainAdapter)recyclerView.getAdapter();
 
-                Log.d(MainActivity.tag,"SwipeThreshlow : " +getSwipeThreshold(viewHolder) + " MoveThreshpold " + getMoveThreshold(viewHolder));
-                adapter.remove(swipedPosition);
+                if(swipeDir  == ItemTouchHelper.LEFT) {
+                    Log.d(MainActivity.tag, "SwipeThreshold : " + getSwipeThreshold(viewHolder) + " MoveThreshold " + getMoveThreshold(viewHolder));
+                    adapter.remove(swipedPosition);
+                }
             }
 
             @Override
@@ -330,8 +332,8 @@ public class CountryInfoListFragment extends Fragment {
 
                 if(isCurrentlyActive && currentPosition==-1) {
 
-                    //Todo:Currently 500 hardcoded for the distance swiped towards left. Needs correction
-                    if(dX<=-500 && Math.abs(dY)<100) {
+                    //Swiping half left of the view would add the element to pendingRemoval.
+                    if(dX<=-itemView.getWidth()/2 && Math.abs(dY)<itemView.getHeight()) {
                         Log.d(MainActivity.tag, "onChildDraw dX: " + dX);
 
                         int position = viewHolder.getAdapterPosition();
